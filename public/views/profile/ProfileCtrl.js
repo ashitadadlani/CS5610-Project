@@ -19,12 +19,18 @@ app.factory("UserService", function ($http) {
     	$http.put("/profile/" + uid + "/myFavorites/" + styleid + "/dealer", car)
     	.success(callback);
     }
+
+    var myreviews = function (username, callback) {
+        $http.get("/profile/myreviews/" + username)
+        .success(callback);
+    }
     
     return {
         findAll: findAll,
         removeCar: removeCar,
         details: details,
-        removeDealer: removeDealer
+        removeDealer: removeDealer,
+        myreviews: myreviews
     };
 
 });
@@ -74,27 +80,37 @@ function ($scope, $http, UserService, $rootScope) {
         });
     };
     
-    $scope.removeDealer = function(car, dealer){
-    	for (var i in $scope.dealers){
-    		if($scope.dealers[i]._id == dealer._id){
-    			$scope.index = i;
-    			break;
-    		}
-    	}
-    	
-    	for (var i in $scope.favorites){
-    		if($scope.favorites[i].styleid == car.styleid){
-    			$scope.car = $scope.favorites[i];
-    			break;
-    		}
-    	}
-    	
-    	$scope.user = $rootScope.currentUser;
-    	$scope.car.dealers.splice($scope.index, 1);
-    	UserService.removeDealer($rootScope.currentUser._id, car.styleid, $scope.favorites, function(response){
-    		$rootScope.currentUser = response;
-    		console.log(response);
-    	})
-    		}
+    $scope.removeDealer = function (car, dealer) {
+        for (var i in $scope.dealers) {
+            if ($scope.dealers[i]._id == dealer._id) {
+                $scope.index = i;
+                break;
+            }
+        }
+
+        for (var i in $scope.favorites) {
+            if ($scope.favorites[i].styleid == car.styleid) {
+                $scope.car = $scope.favorites[i];
+                break;
+            }
+        }
+
+        $scope.user = $rootScope.currentUser;
+        $scope.car.dealers.splice($scope.index, 1);
+        UserService.removeDealer($rootScope.currentUser._id, car.styleid, $scope.favorites, function (response) {
+            $rootScope.currentUser = response;
+            console.log(response);
+        })
+    };
+
+  
+    
+        $scope.user = $scope.currentUser;
+        UserService.myreviews($scope.user.username, function (response) {
+            console.log(response);
+            $scope.myReviews = response;
+        });
+            
+   
     	
 });

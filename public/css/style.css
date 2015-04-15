@@ -1,3 +1,14 @@
+#myProfile{
+    font-size: 24px;
+    font-family: Lucida Calligraphy; 
+    text-decoration: wavy;
+    text-shadow: 2px 2px 5px red;
+}
+
+#logo{
+    max-width: 200%;
+    height: 180%;
+}
 
 .homeimg{  
     height: 50%;

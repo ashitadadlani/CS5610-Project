@@ -390,7 +390,7 @@ app.controller("selectedNewCarStyleCtrl", function ($scope, $http, $rootScope, $
         }
         
         var newReview = {
-        		styleid: $scope.styleid,
+        		stylename: $scope.features.name,
         		averagerating: review.rating,
     			author: $scope.user.username,
     			suggestedImprovements: review.suggestedImprovements, 
@@ -399,7 +399,11 @@ app.controller("selectedNewCarStyleCtrl", function ($scope, $http, $rootScope, $
     			otherComments: review.otherComments
         }
         
-       
+        $http.post("/user/review/" + $scope.user.username, newReview)
+            .success(function (response) {
+                console.log(response);
+            });
+
         $scope.consumerReviews.push(newReview);
         
         

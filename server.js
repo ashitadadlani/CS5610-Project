@@ -96,7 +96,7 @@ var EdmundReviewModel = mongoose.model("EdmundReviewModel", EdmundReviewSchema);
 
 var ReviewSchema = new mongoose.Schema(
 		{
-		    styleid: Number,
+		    stylename: String,
 		    averagerating: Number,
 		    author: String,
 		    suggestedImprovements: String,
@@ -290,6 +290,11 @@ app.get("/profile/myFavorites/:id", function (req, res) {
     })
 });
 
+app.get("/profile/myreviews/:username", function (req, res) {
+    ReviewModel.find({ author: req.params.username} , function (err, data) {
+        res.json(data);
+    });
+});
 
 app.put("/car/user/addDealer/:uid/favorite/:fid", function (req, res) {
     UserModel.findById(req.params.uid, function (err, data) {
@@ -362,6 +367,15 @@ app.post("/car/images/:sid", function (req, res) {
         };
     });
 });
+
+app.post("/user/review/:author", function (req, res) {
+    var review = new ReviewModel(req.body);
+    review.save(function (err, data) {
+        ReviewModel.find(function (err, data) {
+            res.json(data);
+        })
+    })
+})
 
 app.get("/car/edmund/reviews/:sid", function (req, res) {
     EdmundReviewModel.findOne({ styleid: req.params.sid }, function (err, review) {
