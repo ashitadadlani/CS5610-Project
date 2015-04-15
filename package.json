@@ -1,32 +1,39 @@
 {
-  "name": "OpenShift-Sample-App",
-  "version": "1.0.0",
-  "description": "OpenShift Sample Application",
-  "keywords": [
-    "OpenShift",
-    "Node.js",
-    "application",
-    "openshift"
-  ],
-  "author": {
-    "name": "OpenShift",
-    "email": "ramr@example.org",
-    "url": "http://www.openshift.com/"
-  },
-  "homepage": "http://www.openshift.com/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/openshift/origin-server"
-  },
+    "name": "carcafe",
+    "version": "1.0.0",
+    "description": "CS5610 Project",
+    "keywords": [
+        "OpenShift",
+        "Node.js",
+        "application",
+        "openshift"
+    ],
+    "author": {
+        "name": "Ashita Dadlani",
+        "email": "dadlani.a@husky.neu.edu",
+        "url": "http://carcafe-adadlani.rhcloud.com/"
+    },
+    "homepage": "http://carcafe-adadlani.rhcloud.com/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/openshift/origin-server"
+    },
 
-  "engines": {
-    "node": ">= 0.6.0",
-    "npm": ">= 1.0.0"
-  },
+    "engines": {
+        "node": ">= 0.6.0",
+        "npm": ">= 1.0.0"
+    },
 
-  "dependencies": {
-    "express": "~3.4.4"
-  },
+    "dependencies": {
+        "body-parser": "^1.12.2",
+        "cookie-parser": "^1.3.4",
+        "express": "~3.4.4",
+        "express-session": "^1.10.4",
+        "mongoose": "^4.0.1",
+        "multer": "^0.1.8",
+        "passport": "^0.2.1",
+        "passport-local": "^1.0.0"
+    },
   "devDependencies": {},
   "bundleDependencies": [],
 

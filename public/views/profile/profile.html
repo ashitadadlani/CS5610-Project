@@ -1,0 +1,47 @@
+
+
+    <div class="container" id="profileContainer">
+    <h2>
+        Favorite Cars
+    </h2>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped">
+                <tbody>
+                    <tr ng-repeat="fav in favorites">
+                    <td><button type="button" class="btn btn-success" ng-click="getDealers(fav); isCollapsed=!isCollapsed">
+                    {{fav.name}}</a></button>
+						<div ng-if="favdealers==fav.dealers">
+						<div collapse="isCollapsed">
+						
+						<div class="well well-lg" ng-repeat="dealer in favdealers">
+						<a href={{dealer.website}} target=_blank ng-show="dealer">{{dealer.name}}</a>
+						<button ng-click="removeDealer(fav, dealer)" class="btn btn-danger pull-right">Remove from Checklist
+						</div> 
+						
+						</div>
+						</div>
+						<div ng-if="!(fav.dealers)">
+						<div collapse="isCollapsed">
+						<div class="well well-lg">
+						<p>You have not added any dealers to your checklist!!</p>
+						</div>
+						</div>
+						</div>
+						</td>
+                        <td>
+                            
+                            <button ng-click="removeCar(fav)" class="btn btn-danger pull-right">Remove from Favorites</button><br><br>
+                            <a class="btn btn-primary pull-right" href="#/user/{{currentUser.email}}/make/{{fav.make}}/model/{{fav.model}}/year/{{fav.year}}/style/{{fav.styleid}}/zip/{{fav.zip}}">View Car Details</a>
+                              
+                            <br><br>
+                        </td>
+                        
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

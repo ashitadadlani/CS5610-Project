@@ -1,159 +1,438 @@
-#!/bin/env node
-//  OpenShift sample Node application
 var express = require('express');
-var fs      = require('fs');
+var app = express();
+var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
+var multer = require('multer');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var mongoose = require('mongoose');
+var db = mongoose.connect(process.env.OPENSHIFT_MONGODB_DB_URL || 'mongodb://localhost:test');
+
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(multer()); // for parsing multipart/form-data
+app.use(session({ secret: 'this is the secret' }));
+app.use(cookieParser());
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(express.static(__dirname + '/public'));
+
+var DealerSchema = new mongoose.Schema({
+    name: String,
+    phoneNo: Number,
+    street: String,
+    City: String,
+    State: String,
+    Country: String,
+    zip: Number,
+    website: String,
+    id: String
+});
+
+var DealerModel = mongoose.model("DealerModel", DealerSchema);
+
+var FavoriteSchema = new mongoose.Schema({
+    styleid: Number,
+    name: String,
+    make: String,
+    model: String,
+    year: Number,
+    zip: String,
+    dealers: [DealerSchema]
+});
+
+var FavoriteModel = mongoose.model("FavoriteModel", FavoriteSchema);
+
+var UserSchema = new mongoose.Schema({
+    username: String,
+    password: String,
+    firstName: String,
+    lastName: String,
+    email: String,
+    favorites: [FavoriteSchema]
+});
+
+var FeatureSchema = new mongoose.Schema(
+	{
+	    styleid: Number,
+	    name: String,
+	    drivenwheels: String,
+	    cityFuelEconomy: String,
+	    highwayFuelEconomy: String,
+	    cylinders: String,
+	    configuration: String,
+	    fuelType: String,
+	    gasType: String,
+	    numOfDoors: String,
+	    body: String,
+	    transmissionnumberOfSpeeds: String,
+	    transmissionType: String
+	});
+
+var FeatureModel = mongoose.model("FeatureModel", FeatureSchema);
+
+var ImageSchema = new mongoose.Schema({
+    styleid: Number,
+    img: [String]
+});
+
+var ImageModel = mongoose.model("ImageModel", ImageSchema);
+
+var EdmundReviewSchema = new mongoose.Schema(
+		{
+		    styleid: Number,
+		    pros: String,
+		    con: String,
+		    edmundSays: String,
+		    safety: String,
+		    powerTrain: String,
+		    whatsNew: String
+		});
+
+var EdmundReviewModel = mongoose.model("EdmundReviewModel", EdmundReviewSchema);
+
+var ReviewSchema = new mongoose.Schema(
+		{
+		    styleid: Number,
+		    averagerating: Number,
+		    author: String,
+		    suggestedImprovements: String,
+		    title: String,
+		    favoriteFeatures: String,
+		    otherComments: String
+		});
+
+var ReviewModel = mongoose.model("ReviewModel", ReviewSchema);
+
+var CustomerReviewSchema = new mongoose.Schema(
+		{
+		    styleid: Number,
+		    reviews: [ReviewSchema]
+		});
+
+var CustomerReviewModel = mongoose.model("CustomerReviewModel", CustomerReviewSchema);
+
+var CarSchema = new mongoose.Schema(
+    {
+        make: String,
+        model: String,
+        year: Number,
+        styleid: Number,
+        name: String,
+        features: [FeatureSchema]
+    }
+    );
 
 
-/**
- *  Define the sample application.
- */
-var SampleApp = function() {
+var UserModel = mongoose.model("UserModel", UserSchema);
 
-    //  Scope.
-    var self = this;
+var CarModel = mongoose.model("CarModel", CarSchema);
 
 
-    /*  ================================================================  */
-    /*  Helper functions.                                                 */
-    /*  ================================================================  */
-
-    /**
-     *  Set up server IP address and port # using env variables/defaults.
-     */
-    self.setupVariables = function() {
-        //  Set the environment variables we need.
-        self.ipaddress = process.env.OPENSHIFT_NODEJS_IP;
-        self.port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-
-        if (typeof self.ipaddress === "undefined") {
-            //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
-            //  allows us to run/test the app locally.
-            console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
-            self.ipaddress = "127.0.0.1";
-        };
-    };
+passport.use(new LocalStrategy(
+function (email, password, done) {
+    UserModel.findOne({ email: email, password: password }, function (err, user) {
+        if (user)
+            return done(null, user);
+        else
+            return (null, false, { message: 'Unable to login' });
+    })
+}
+));
 
 
-    /**
-     *  Populate the cache.
-     */
-    self.populateCache = function() {
-        if (typeof self.zcache === "undefined") {
-            self.zcache = { 'index.html': '' };
+passport.serializeUser(function (user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function (user, done) {
+    done(null, user);
+})
+
+app.post("/login", passport.authenticate('local'),
+function (req, res) {
+    var user = req.user;
+    console.log(user);
+    res.json(user);
+
+});
+
+app.post("/register/check", function (req, res) {
+    var newUser = req.body;
+    UserModel.findOne({ email: newUser.email }, function (err, user) {
+        if (user) {
+            res.json(403, { isTaken: true });
+            return;
         }
+        else
+            res.send(200);
+    });
+});
 
-        //  Local cache for static content.
-        self.zcache['index.html'] = fs.readFileSync('./index.html');
-    };
+app.get('/', function (req, res) {
+    res.redirect('/home');
+});
 
+app.get("/home", function (req, res) {
+    res.json(req.body);
+});
 
-    /**
-     *  Retrieve entry (content) from cache.
-     *  @param {string} key  Key identifying content to retrieve from cache.
-     */
-    self.cache_get = function(key) { return self.zcache[key]; };
+app.get('/user/login', function (req, res) {
+    UserModel.find(function (err, users) {
+        console.log(users);
+        res.json(users);
+    })
+});
 
+app.get('/user/login/:email', function (req, res) {
+    UserModel.findOne({ email: req.params.email }, function (err, user) {
+        console.log(user)
+        res.json(user);
+    })
+})
 
-    /**
-     *  terminator === the termination handler
-     *  Terminate server on receipt of the specified signal.
-     *  @param {string} sig  Signal to terminate on.
-     */
-    self.terminator = function(sig){
-        if (typeof sig === "string") {
-           console.log('%s: Received %s - terminating sample app ...',
-                       Date(Date.now()), sig);
-           process.exit(1);
+app.post("/register", function (req, res) {
+    var newUser = req.body;
+
+    UserModel.findOne({ email: newUser.email }, function (err, user) {
+        if (err) { return next(err); }
+        if (user) {
+            res.json(null);
+            return;
         }
-        console.log('%s: Node server stopped.', Date(Date.now()) );
-    };
-
-
-    /**
-     *  Setup termination handlers (for exit and a list of signals).
-     */
-    self.setupTerminationHandlers = function(){
-        //  Process on exit and signals.
-        process.on('exit', function() { self.terminator(); });
-
-        // Removed 'SIGPIPE' from the list - bugz 852598.
-        ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT',
-         'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'
-        ].forEach(function(element, index, array) {
-            process.on(element, function() { self.terminator(element); });
+        var newUser = new UserModel(req.body);
+        newUser.save(function (err, user) {
+            req.login(user, function (err) {
+                if (err) { return next(err); }
+                res.json(user);
+            });
         });
-    };
+    });
+});
 
+app.get('/loggedin', function (req, res) {
+    res.send(req.isAuthenticated() ? req.user : '0');
+});
 
-    /*  ================================================================  */
-    /*  App server functions (main app logic here).                       */
-    /*  ================================================================  */
+app.post("/logout", function (req, res) {
+    req.logout();
+    res.send(200);
+})
 
-    /**
-     *  Create the routing table entries + handlers for the application.
-     */
-    self.createRoutes = function() {
-        self.routes = { };
+var auth = function (req, res, next) {
+    if (!req.isAuthenticated())
+        res.send(401);
+    else
+        next();
+};
 
-        self.routes['/asciimo'] = function(req, res) {
-            var link = "http://i.imgur.com/kmbjB.png";
-            res.send("<html><body><img src='" + link + "'></body></html>");
-        };
+app.post("/addToFavorite/car", function (req, res) {
+    CarModel.findOne({ styleid: req.body.styleid }, function (err, car) {
+        if (car) {
+            res.json(null);
+            return;
 
-        self.routes['/'] = function(req, res) {
-            res.setHeader('Content-Type', 'text/html');
-            res.send(self.cache_get('index.html') );
-        };
-    };
-
-
-    /**
-     *  Initialize the server (express) and create the routes and register
-     *  the handlers.
-     */
-    self.initializeServer = function() {
-        self.createRoutes();
-        self.app = express.createServer();
-
-        //  Add handlers for the app (from the routes).
-        for (var r in self.routes) {
-            self.app.get(r, self.routes[r]);
         }
-    };
 
-
-    /**
-     *  Initializes the sample application.
-     */
-    self.initialize = function() {
-        self.setupVariables();
-        self.populateCache();
-        self.setupTerminationHandlers();
-
-        // Create the express server and routes.
-        self.initializeServer();
-    };
-
-
-    /**
-     *  Start the server (starts up the sample application).
-     */
-    self.start = function() {
-        //  Start the app on the specific interface (and port).
-        self.app.listen(self.port, self.ipaddress, function() {
-            console.log('%s: Node server started on %s:%d ...',
-                        Date(Date.now() ), self.ipaddress, self.port);
+        var newCar = new CarModel(req.body);
+        newCar.save(function (err, car) {
+            res.json(car);
         });
-    };
+    });
+});
 
-};   /*  Sample Application.  */
+app.get("/myFavorite/car/details/:id", function (req, res) {
+    CarModel.findOne({ styleid: req.params.id }, function (err, car) {
+        res.json(car);
+        console.log(car);
+    })
+});
+
+app.get("/myFavorite/car/feature/details/:sid", function (req, res) {
+    FeatureModel.findOne({ styleid: req.params.sid }, function (err, feature) {
+        res.json(feature);
+    })
+})
+
+app.put("/user/addFavorites/:id", function (req, res) {
+    UserModel.update({ _id: req.params.id }, { $set: { favorites: req.body.favorites } }, function (err, data) {
+        UserModel.find(function (err, data) {
+
+        })
+    })
+});
 
 
+app.put("/profile/myFavorites/:id", function (req, res) {
+    UserModel.update({ _id: req.params.id }, { $set: { favorites: req.body } }, function (err, data) {
+        UserModel.findOne({ _id: req.params.id }, function (err, data) {
+            console.log(data);
+            res.json(data);
+        })
+    });
+});
 
-/**
- *  main():  Main code.
- */
-var zapp = new SampleApp();
-zapp.initialize();
-zapp.start();
+app.put('/user/:uid/favorite/:sid', function (req, res) {
+    UserModel.update({ _id: req.params.uid }, { $set: { favorites: req.body.favorites } }, function (err, data) {
+        UserModel.findOne({ _id: req.params.uid }, function (err, data) {
+            res.json(data);
+        })
+    })
+});
 
+app.get("/profile/myFavorites/:id", function (req, res) {
+    UserModel.findOne({ _id: req.params.id }, function (err, user) {
+
+        res.json(user.favorites);
+    })
+});
+
+
+app.put("/car/user/addDealer/:uid/favorite/:fid", function (req, res) {
+    UserModel.findById(req.params.uid, function (err, data) {
+        data.firstName = req.body.firstName;
+        data.lastName = req.body.lastName;
+        data.username = req.body.username;
+        data.password = req.body.password;
+        data.email = req.body.email;
+        data.favorites = req.body.favorites;
+        data.save(function (err, result) {
+            UserModel.findById(req.params.uid, function (err, doc) {
+                res.json(doc);
+
+            })
+        })
+    });
+});
+
+app.put("/profile/:uid/myFavorites/:styleid/dealer/", function (req, res) {
+    UserModel.update({ _id: req.params.uid }, { $set: { favorites: req.body } }, function (err, data) {
+        UserModel.findById(req.params.uid, function (err, data) {
+            res.json(data);
+            console.log(data);
+        })
+    })
+})
+
+app.get("/car/features/:sid", function (req, res) {
+    FeatureModel.findOne({ styleid: req.params.sid }, function (err, data) {
+        res.json(data);
+    });
+});
+
+app.post("/car/features/:sid", function (req, res) {
+    FeatureModel.findOne({ styleid: req.params.sid }, function (err, feature) {
+        if (feature) {
+            res.json(null);
+            return;
+        }
+        else {
+            var newFeature = new FeatureModel(req.body);
+            newFeature.save(function (err, feature) {
+                FeatureModel.findOne({ styleid: req.params.sid }, function (err, data) {
+                    res.json(feature);
+                })
+            })
+        }
+    })
+});
+
+app.get("/car/images/:sid", function (req, res) {
+    ImageModel.findOne({ styleid: req.params.sid }, function (err, images) {
+        res.json(images);
+    });
+});
+
+app.post("/car/images/:sid", function (req, res) {
+    ImageModel.findOne({ styleid: req.params.sid }, function (err, feature) {
+        if (feature) {
+            res.json(null);
+            return;
+        }
+        else {
+            var newImage = new ImageModel(req.body);
+            newImage.save(function (err, image) {
+                ImageModel.findOne({ styleid: req.params.sid }, function (err, data) {
+                    res.json(image);
+                })
+            });
+        };
+    });
+});
+
+app.get("/car/edmund/reviews/:sid", function (req, res) {
+    EdmundReviewModel.findOne({ styleid: req.params.sid }, function (err, review) {
+        res.json(review);
+    });
+});
+
+app.post("/car/edmund/reviews/:sid", function (req, res) {
+    EdmundReviewModel.findOne({ styleid: req.params.sid }, function (err, review) {
+        if (review) {
+            res.json(null);
+            return;
+        }
+        else {
+            var newReview = new EdmundReviewModel(req.body);
+            newReview.save(function (err, review) {
+                EdmundReviewModel.findOne({ styleid: req.params.sid }, function (err, data) {
+                    res.json(data);
+                })
+            });
+        };
+    });
+});
+
+app.get("/car/customer/review/:sid", function (req, res) {
+    CustomerReviewModel.findOne({ styleid: req.params.sid }, function (err, review) {
+        res.json(review);
+    });
+});
+
+app.post("/car/customer/review/:sid", function (req, res) {
+    CustomerReviewModel.findOne({ styleid: req.params.sid }, function (err, review) {
+        if (review) {
+            res.json(null);
+            return;
+        }
+        else {
+            var newReview = new CustomerReviewModel(req.body);
+            newReview.save(function (err, review) {
+                CustomerReviewModel.findOne({ styleid: req.params.sid }, function (err, data) {
+                    res.json(data);
+                })
+            });
+        };
+    });
+});
+
+app.put("/car/customer/review/:sid", function (req, res) {
+    CustomerReviewModel.findOne({ styleid: req.params.sid }, function (err, data) {
+        if (data) {
+            CustomerReviewModel.update({ styleid: req.params.sid }, { $set: { reviews: req.body } }, function (err, data) {
+                CustomerReviewModel.findOne({ styleid: req.params.sid }, function (err, data) {
+                    res.json(data);
+                })
+            })
+        }
+        else {
+            var review = { styleid: req.params.sid, reviews: req.body };
+            var newReview = new CustomerReviewModel(review);
+            newReview.save(function (err, data) {
+                CustomerReviewModel.findOne({ styleid: req.params.sid }, function (err, review) {
+                    res.json(review);
+                })
+
+            })
+        }
+    })
+});
+
+
+var ip = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+var port = process.env.OPENSHIFT_NODEJS_PORT || 3000;
+
+app.listen(port, ip);
