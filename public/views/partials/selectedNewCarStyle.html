@@ -1,9 +1,6 @@
-body{
-padding-top: 100px;
-} 
 
 
- <div class="tablediv">
+ <div class="container" id="viewcar">
  	<span class="Images" ng-show="media.length == 0">No images are available for this model.</span>
      <div id="myCarousel" class="carousel slide" data-ride="carousel" ng-show="media">
 
@@ -32,12 +29,12 @@ padding-top: 100px;
 
      <tabset justified="true">
      	<tab heading="Price"><br>	
-     		<table class="table table-striped table-hover table-responsive">
+     		<table class="table table-striped table-hover table-responsive table-condensed">
      			<tbody>
      				
      				<tr>
-     					<td><h4><b>Pricing Details</b></h4></td>
-     					<td><h4><b>Price</b></h4></td>
+     					<td><h4>Pricing Details</h4></td>
+     					<td><h4>Price</h4></td>
      				</tr>
      				<tr>
      					<td>Base MSRP:</td>
@@ -197,6 +194,7 @@ padding-top: 100px;
                          <td>{{dealer.name}}</td>
                          <td>
                              <button ng-click="getDetails(dealer)" class="btn btn-primary pull-right" value="View Details">
+                                
                                 View Details
                              </button>
                          	 <br><br>
