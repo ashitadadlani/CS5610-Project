@@ -15,17 +15,13 @@
                     <tbody>
                         <tr ng-repeat="fav in favorites">
                             <td>
-                                <button type="button" class="btn btn-success" ng-click="getDealers(fav); isCollapsed=!isCollapsed">
-                                   {{fav.make}} {{fav.model}} {{fav.name}}
+                                <button type="button" class="btn btn-success" id="show-hide-btn" ng-click="getDealers(fav)">
+                                    {{fav.make}} {{fav.model}} {{fav.name}}
                                 </button>
-                                <div ng-if="favdealers==fav.dealers">
-                                    <div collapse="isCollapsed">
-
-                                        <div class="well well-lg" ng-repeat="dealer in favdealers">
-                                            <a href={{dealer.website}} target=_blank ng-show="dealer">{{dealer.name}}</a>
-                                            <button ng-click="removeDealer(fav, dealer)" class="btn btn-danger pull-right">Remove from Checklist</button>
-                                        </div>
-
+                                <div ng-if="favdealers==fav.dealers" id="show-hide">
+                                    <div class="well well-lg" ng-repeat="dealer in favdealers">
+                                        <a href={{dealer.website}} target=_blank ng-show="dealer">{{dealer.name}}</a>
+                                        <button ng-click="removeDealer(fav, dealer)" class="btn btn-danger pull-right">Remove from Checklist</button>
                                     </div>
                                 </div>
                                 <div ng-if="!(fav.dealers)">

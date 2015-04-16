@@ -63,7 +63,9 @@ function ($scope, $http, UserService, $rootScope) {
         $scope.favdealers = [];
         $scope.favdealers = favorite.dealers;
         console.log("Dealers");
-        console.log($scope.favdealers);
+        
+               $("#show-hide").toggle();
+               
     };
 
     $scope.removeCar = function (car) { 
