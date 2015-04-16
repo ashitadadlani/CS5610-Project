@@ -52,7 +52,8 @@ var UserSchema = new mongoose.Schema({
     firstName: String,
     lastName: String,
     email: String,
-    favorites: [FavoriteSchema]
+    favorites: [FavoriteSchema],
+    subscription: [{ name: String, createdOn: { type: Date, default: Date.now }, make: String, model: String}]
 });
 
 var FeatureSchema = new mongoose.Schema(
@@ -247,7 +248,7 @@ app.post("/addToFavorite/car", function (req, res) {
 app.get("/myFavorite/car/details/:id", function (req, res) {
     CarModel.findOne({ styleid: req.params.id }, function (err, car) {
         res.json(car);
-        console.log(car);
+       
     })
 });
 
@@ -265,11 +266,18 @@ app.put("/user/addFavorites/:id", function (req, res) {
     })
 });
 
+app.put("/user/subscription/:uid", function (req, res) {
+    UserModel.update({ _id: req.params.uid }, { $set: { subscription: req.body.subscription } }, function (err, data) {
+        UserModel.findOne({ _id: req.params.uid }, function (err, data) {
+            res.json(data);
+        })
+    })
+})
 
 app.put("/profile/myFavorites/:id", function (req, res) {
     UserModel.update({ _id: req.params.id }, { $set: { favorites: req.body } }, function (err, data) {
         UserModel.findOne({ _id: req.params.id }, function (err, data) {
-            console.log(data);
+            
             res.json(data);
         })
     });
@@ -317,10 +325,24 @@ app.put("/profile/:uid/myFavorites/:styleid/dealer/", function (req, res) {
     UserModel.update({ _id: req.params.uid }, { $set: { favorites: req.body } }, function (err, data) {
         UserModel.findById(req.params.uid, function (err, data) {
             res.json(data);
-            console.log(data);
+
         })
     })
-})
+});
+
+app.get("/profile/mysubscription/:uid", function (req, res) {
+    UserModel.findById(req.params.uid, function (err, data) {
+        res.json(data.subscription);
+    })
+});
+
+app.put("/profile/mysubscription/:uid", function (req, res) {
+    UserModel.update({ _id: req.params.uid }, { $set: { subscription: req.body } }, function (err, data) {
+        UserModel.findById(req.params.uid, function (err, user) {
+            res.json(user);
+        })
+    })
+});
 
 app.get("/car/features/:sid", function (req, res) {
     FeatureModel.findOne({ styleid: req.params.sid }, function (err, data) {

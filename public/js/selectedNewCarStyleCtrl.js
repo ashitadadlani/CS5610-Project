@@ -214,13 +214,12 @@ app.controller("selectedNewCarStyleCtrl", function ($scope, $http, $rootScope, $
         });
 
     $scope.addToFavorites = function () {
-        
-        $http.get('/loggedin').success(function(user)
-        { 
+
+        $http.get('/loggedin').success(function (user) {
             $rootScope.errorMessage = null;
             //			User is Authenticated
             if (user !== '0') {
-                
+
                 $scope.userId = user._id;
                 var newFav = {
                     styleid: $scope.styleid,
@@ -231,55 +230,102 @@ app.controller("selectedNewCarStyleCtrl", function ($scope, $http, $rootScope, $
                     zip: $scope.zipcode
                 };
 
-                
+
                 $http.get('/user/login')
-                    .success(function (response){
-                    for (var i in response) {
-                        if(response[i]._id == $scope.userId){
-                            $scope.user = response[i];
-                            break;
+                    .success(function (response) {
+                        for (var i in response) {
+                            if (response[i]._id == $scope.userId) {
+                                $scope.user = response[i];
+                                break;
+                            }
                         }
-                    }
-                    
-                    for (var i in $scope.user.favorites) {
-                        if ($scope.user.favorites[i].styleid == $scope.styleid) {
-                            $scope.styleExist = true;
-                           
-                            break;
+
+                        for (var i in $scope.user.favorites) {
+                            if ($scope.user.favorites[i].styleid == $scope.styleid) {
+                                $scope.styleExist = true;
+
+                                break;
+                            }
                         }
-                    }
 
-                    if($scope.styleExist){
-                    	;
-                    }
-                    else{
-                    	$scope.user.favorites.push(newFav);
-                    	console.log(user.favorites);
-                    	$http.put("/user/addFavorites/" + $scope.user._id, $scope.user);
-                    	
-                    	console.log($scope.features);
-                    	var newCar = {
-                    			make: $scope.make,
-                    			model: $scope.model,
-                    			year: $scope.year,
-                    			styleid: $scope.styleid,
-                    			name: $scope.features.name,
-                    			features: [$scope.features]
-                    	};
-                    	$http.post("/addToFavorite/car", newCar)
-                        .success(function (response) {
-                            console.log(response);
-                        });
+                        if ($scope.styleExist) {
+                            ;
+                        }
+                        else {
+                            $scope.user.favorites.push(newFav);
+                            console.log(user.favorites);
+                            $http.put("/user/addFavorites/" + $scope.user._id, $scope.user);
 
-                    }
-                });
-                }
-             else {
-                
+                            console.log($scope.features);
+                            var newCar = {
+                                make: $scope.make,
+                                model: $scope.model,
+                                year: $scope.year,
+                                styleid: $scope.styleid,
+                                name: $scope.features.name,
+                                features: [$scope.features]
+                            };
+                            $http.post("/addToFavorite/car", newCar)
+                            .success(function (response) {
+                                console.log(response);
+                            });
+
+                        }
+                    });
+            }
+            else {
+
                 $location.url('/login');
             }
-        });  
+        });
+    };
+
+    $scope.subscribe = function () {
+        $http.get('/loggedin').success(function (user) {
+            if (user !== '0') {
+                $scope.userId = user._id;
+
+                $http.get('/user/login')
+                        .success(function (response) {
+                            for (var i in response) {
+                                if (response[i]._id == $scope.userId) {
+                                    $scope.user = response[i];
+                                    break;
+                                }
+                            }
+
+                            var newSubscription = {
+                                createdOn: Date.now,
+                                name: $scope.features.name,
+                                make: $scope.make,
+                                model: $scope.model
+                            }
+
+                            var isExist = false;
+                            for (var i in $scope.user.subscription) {
+                                if ($scope.user.subscription[i].name == $scope.features.name) {
+                                    isExist = true;
+                                    break;
+                                }
+                            }
+
+                            if (isExist == false) {
+                                $scope.user.subscription.push(newSubscription);
+
+                                $http.put("/user/subscription/" + $scope.user._id, $scope.user)
+                                .success(function (response) {
+                                    console.log(response);
+                                    $scope.currentUser = response;
+                                });
+                            }
+                        })
             }
+            else {
+
+                $location.url('/login');
+            }
+        });
+    }
 
     $scope.trueMarketValue = function () {
         $rootScope.priceClicked = true;

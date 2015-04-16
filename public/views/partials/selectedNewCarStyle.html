@@ -16,12 +16,18 @@ padding-top: 100px;
          </div>
 
              </div><br>
-     <button ng-click="addToFavorites()" class="btn btn-info pull-center">
-        Add to Favorites
-     </button>
-     <br /><br />
-     <button type="submit" class="btn pull-right" ng-click="getDealersByZipcode(zip)">ZipCode</button>
-            	<input placeholder={{zipcode}} ng-model='zip' class="input-group pull-right"> 
+     <div>
+         <button ng-click="addToFavorites()" class="btn btn-info pull-center">
+             Add to Favorites
+         </button>
+
+         <button ng-click="subscribe()" class="btn btn-info" id="subscribe">
+             Subscribe
+         </button>
+
+         <button type="submit" class="btn pull-right" ng-click="getDealersByZipcode(zip)">ZipCode</button>
+         <input placeholder={{zipcode}} ng-model='zip' class="input-group pull-right">
+     </div>
             <br /><br />
 
      <tabset justified="true">
@@ -30,8 +36,8 @@ padding-top: 100px;
      			<tbody>
      				
      				<tr>
-     					<td><b><h4>Pricing Details</h4></b></td>
-     					<td><b><h4>Price</h4></b>
+     					<td><h4><b>Pricing Details</b></h4></td>
+     					<td><h4><b>Price</b></h4></td>
      				</tr>
      				<tr>
      					<td>Base MSRP:</td>
@@ -83,69 +89,83 @@ padding-top: 100px;
      		</table>
      	</tab>
      	<tab heading="Reviews"><br>
-     	<accordion close-others="oneAtATime" >
-     		<accordion-group heading="Edmund's Review" ng-click="getReviews()">
-     		<span class="reviewTitle" ng-show="!editorial">Oops!! Sorry!! Edmund hasn't posted any reviews for this model.</span>
-     			<div ng-if="editorial">
-     			<h5><b>Pros</b></h5>
-                 <p>{{editorial.pros}}</p>
-                 <h5><b>Con:</b></h5>
-                 <p>{{editorial.con}}</p>
-                 <h5><b>Edmund Says..</b></h5>
-                 <p>{{editorial.edmundSays}}</p>
-                 <h5><b>Safety</b></h5>
-                 <p>{{editorial.safety}}</p>
-                 <h5><b>PowerTrain</b></h5>
-                 <p>{{editorial.powerTrain}}</p>
-                 <h5><b>What's New</b></h5>
-                 <p>{{editorial.whatsNew}}</p>
-                 </div>
-     		</accordion-group>
-     		<accordion-group heading="Customer Review" ng-click="getConsumerReviews()">
-     		<span class="reviewTitle" ng-show="consumerReviews.length == 0">Be the first one to review this product.</span>
-     			<button class="btn btn-primary" ng-click="addReview()">Add Review</button><br><br>
-     			<div ng-show="newReviewToAdd">
-     			  <div><span>Select your rating : <select ng-model="newReview.rating" required="required">
-       			   	      <option selected="selected">1</option>
-       	                  <option>2</option>
-       	                  <option>3</option>
-       	                  <option>4</option>
-       	                  <option>5</option>
-                        </select>
-                      </span>
-                  </div><br>
-     			  <div><b>Review Title: </b><br>
-     			  <textarea id="reviewTitle" rows="1" cols="75" ng-model="newReview.title" placeholder="Title for your review"></textarea> </div><br>
-     			  <div><b>Favorite Features: </b><br>
-     			  <textarea id="reviewArea" rows="4" cols="75" ng-model="newReview.favoriteFeatures" placeholder="Tell us about your what you like about this car"></textarea></div><br>
-     			  <div><b>Suggested Improvements: </b><br>
-     			  <textarea id="reviewArea" rows="4" cols="75" ng-model="newReview.suggestedImprovements" placeholder="Give us your suggestions"></textarea></div><br>
-     			  <div><b>Other Comments: </b><br>
-     			  <textarea id="reviewArea" rows="4" cols="75" ng-model="newReview.otherComments" placeholder="Any other comments"></textarea></div><br>
-     			  <div><button id="reviewSubmit" class="btn btn-info" ng-show="newReview.rating" ng-click="submitReview(newReview)"> Submit</button> 
-     			       <button id="reviewSubmit" class="btn btn-info" ng-click="cancelReview()"> Cancel</button> </div><br><br>
-     			</div><br>
-     			<table class="table table-striped table-hover table-responsive">
-     				<tbody>
-     					<tr ng-repeat="review in consumerReviews">
-     					<td>
-     						<h5><b>Title:</b> {{review.title}}</h5>
-     						<h5><b>Customer Rating:</b> {{review.averagerating}}</h5>
-     						<h5><b>Favorite Features</b></h5>
-     						<p>{{review.favoriteFeatures}}</p>
-     						<h5><b>Suggested Improvements</b></h5>
-     						<p>{{review.suggestedImprovements}}</p>
-     						<h5><b>Other Comments</b></h5>
-     						<p>{{review.otherComments}}</p>
-     						<br>
-     						<p>Authored by: {{review.author}}</p>
-     						</td>
-     					</tr>
-     				</tbody>
-     			</table>
-     			
-     		</accordion-group>
-     		</accordion>
+             <accordion close-others="oneAtATime">
+                
+                     <accordion-group heading="Edmund's Review" ng-click="getReviews()">
+                         <span class="reviewTitle" ng-show="!editorial">Oops!! Sorry!! Edmund hasn't posted any reviews for this model.</span>
+                         <div ng-if="editorial">
+                             <h5><b>Pros</b></h5>
+                             <p>{{editorial.pros}}</p>
+                             <h5><b>Con:</b></h5>
+                             <p>{{editorial.con}}</p>
+                             <h5><b>Edmund Says..</b></h5>
+                             <p>{{editorial.edmundSays}}</p>
+                             <h5><b>Safety</b></h5>
+                             <p>{{editorial.safety}}</p>
+                             <h5><b>PowerTrain</b></h5>
+                             <p>{{editorial.powerTrain}}</p>
+                             <h5><b>What's New</b></h5>
+                             <p>{{editorial.whatsNew}}</p>
+                         </div>
+                     </accordion-group>
+                
+                 <accordion-group heading="Customer Review" ng-click="getConsumerReviews()">
+                     <span class="reviewTitle" ng-show="consumerReviews.length == 0">Be the first one to review this product.</span>
+                     <button class="btn btn-primary" ng-click="addReview()">Add Review</button><br><br>
+                     <div ng-show="newReviewToAdd">
+                         <div>
+                             <span>
+                                 Select your rating : <select ng-model="newReview.rating" required="required">
+                                     <option selected="selected">1</option>
+                                     <option>2</option>
+                                     <option>3</option>
+                                     <option>4</option>
+                                     <option>5</option>
+                                 </select>
+                             </span>
+                         </div><br>
+                         <div>
+                             <b>Review Title: </b><br>
+                             <textarea id="reviewTitle" rows="1" cols="75" ng-model="newReview.title" placeholder="Title for your review"></textarea>
+                         </div><br>
+                         <div>
+                             <b>Favorite Features: </b><br>
+                             <textarea id="reviewArea" rows="4" cols="75" ng-model="newReview.favoriteFeatures" placeholder="Tell us about your what you like about this car"></textarea>
+                         </div><br>
+                         <div>
+                             <b>Suggested Improvements: </b><br>
+                             <textarea id="reviewArea" rows="4" cols="75" ng-model="newReview.suggestedImprovements" placeholder="Give us your suggestions"></textarea>
+                         </div><br>
+                         <div>
+                             <b>Other Comments: </b><br>
+                             <textarea id="reviewArea" rows="4" cols="75" ng-model="newReview.otherComments" placeholder="Any other comments"></textarea>
+                         </div><br>
+                         <div>
+                             <button id="reviewSubmit" class="btn btn-info" ng-show="newReview.rating" ng-click="submitReview(newReview)"> Submit</button>
+                             <button id="reviewSubmit" class="btn btn-info" ng-click="cancelReview()"> Cancel</button>
+                         </div><br><br>
+                     </div><br>
+                     <table class="table table-striped table-hover table-responsive">
+                         <tbody>
+                             <tr ng-repeat="review in consumerReviews">
+                                 <td>
+                                     <h5><b>Title:</b> {{review.title}}</h5>
+                                     <h5><b>Customer Rating:</b> {{review.averagerating}}</h5>
+                                     <h5><b>Favorite Features</b></h5>
+                                     <p>{{review.favoriteFeatures}}</p>
+                                     <h5><b>Suggested Improvements</b></h5>
+                                     <p>{{review.suggestedImprovements}}</p>
+                                     <h5><b>Other Comments</b></h5>
+                                     <p>{{review.otherComments}}</p>
+                                     <br>
+                                     <p>Authored by: {{review.author}}</p>
+                                 </td>
+                             </tr>
+                         </tbody>
+                     </table>
+
+                 </accordion-group>
+             </accordion>
      	</tab>
      	<tab heading="Dealers"><br><br>
      		<span class="Dealers" ng-show="dealers.length == 0">You don't have any dealers near this area.Search for a different location.</span>

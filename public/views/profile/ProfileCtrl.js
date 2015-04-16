@@ -24,13 +24,25 @@ app.factory("UserService", function ($http) {
         $http.get("/profile/myreviews/" + username)
         .success(callback);
     }
+
+    var mySubscription = function(id, callback){
+        $http.get("/profile/mysubscription/" + id)
+        .success(callback);
+    }
+
+    var cancelSubscription = function (uid, subscriptions, callback) {
+        $http.put("/profile/mysubscription/" + uid,  subscriptions)
+        .success(callback);
+    }
     
     return {
         findAll: findAll,
         removeCar: removeCar,
         details: details,
         removeDealer: removeDealer,
-        myreviews: myreviews
+        myreviews: myreviews,
+        mySubscription: mySubscription,
+        cancelSubscription: cancelSubscription
     };
 
 });
@@ -63,7 +75,7 @@ function ($scope, $http, UserService, $rootScope) {
         }
         $scope.user = $rootScope.currentUser;
         $scope.favorites.splice($scope.index, 1);
-        console.log($scope.favorites);
+       
         UserService.removeCar($rootScope.currentUser._id, $scope.favorites, function (response) {
         	console.log("Removed");
             console.log(response);
@@ -105,12 +117,29 @@ function ($scope, $http, UserService, $rootScope) {
 
   
     
-        $scope.user = $scope.currentUser;
+        $scope.user = $rootScope.currentUser;
         UserService.myreviews($scope.user.username, function (response) {
             console.log(response);
             $scope.myReviews = response;
         });
             
-   
+        UserService.mySubscription($rootScope.currentUser._id, function (response) {
+            $scope.mySubscriptions = response;
+            console.log($scope.mySubscriptions);
+        });
     	
+        $scope.cancelSubscription = function (sid) {
+            var index;
+            for (var i in $scope.mySubscriptions) {
+                if (sid == $scope.mySubscriptions[i]._id) {
+                    index = i;
+                    break;
+                }
+            }
+            $scope.mySubscriptions.splice(index, 1);
+            UserService.cancelSubscription($rootScope.currentUser._id, $scope.mySubscriptions, function (response) {
+                $rootScope.currentUser = response;
+                console.log(response);
+            })
+        }
 });

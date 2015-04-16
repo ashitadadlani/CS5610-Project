@@ -48,11 +48,14 @@
                 <tr ng-repeat="style in styles | offset: currentPage*itemsPerPage | limitTo : itemsPerPage">
                     
                     <td width="60%">
-                        <h4>
+                        
                         <div ng-if="!currentUser">
-                        <a href="#/make/{{make}}/model/{{model}}/year/{{year1}}/style/{{style.id}}/zip/{{zipcode}}"><b>{{style.name}}</b></a></h4>
+                            <h4>
+                                <a href="#/make/{{make}}/model/{{model}}/year/{{year1}}/style/{{style.id}}/zip/{{zipcode}}"><b>{{style.name}}</b></a>
+                            </h4>
                         </div>
                         <div ng-if="currentUser">
+                            <h4>
                         <a href="#/user/{{currentUser.email}}/make/{{make}}/model/{{model}}/year/{{year1}}/style/{{style.id}}/zip/{{zipcode}}"><b>{{style.name}}</b></a></h4>
                         </div>
                         <p><b>Model No: </b>{{style.id}}</p>
