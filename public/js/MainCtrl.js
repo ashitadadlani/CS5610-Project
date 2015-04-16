@@ -128,7 +128,7 @@ app.controller('MainCtrl', function ($scope, $http, $rootScope, $location) {
     });
 
     $scope.fetchModels = function (make) {
-        
+       
         $scope.selectedMake = make;
         $rootScope.years = null;;
         $rootScope.styles = null;
@@ -136,7 +136,7 @@ app.controller('MainCtrl', function ($scope, $http, $rootScope, $location) {
         .success(function (response) {
             console.log(response.models);
             $rootScope.models = response.models;
-            
+            $('#model').addClass('open');
             
         });
     };
@@ -147,6 +147,8 @@ app.controller('MainCtrl', function ($scope, $http, $rootScope, $location) {
         .success(function (response) {
             console.log(response.years);
             $rootScope.years = response.years;
+            $('#model').removeClass('open');
+            $('#year').addClass('open');
         });
     };
 

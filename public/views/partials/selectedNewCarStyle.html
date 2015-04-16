@@ -1,18 +1,22 @@
-
+<style>
+    body{
+        background-image:url("../../MyImages/1.jpg");
+    }
+</style>
 
  <div class="container" id="viewcar">
  	<span class="Images" ng-show="media.length == 0">No images are available for this model.</span>
-     <div id="myCarousel" class="carousel slide" data-ride="carousel" ng-show="media">
+     <div id="viewsections" class="carousel slide" data-ride="carousel" ng-show="media">
 
-         <div class="carousel-inner" role="listbox" >
-			<carousel interval="myInterval">
-			<slide ng-repeat="m in media">
-             <img src={{m}} height="100%" width="100%" />
-             </slide>
+         <div class="carousel-inner" role="listbox">
+             <carousel interval="myInterval">
+                 <slide ng-repeat="m in media">
+                     <img src={{m}} height="100%" width="100%" />
+                 </slide>
              </carousel>
          </div>
 
-             </div><br>
+     </div><br>
      <div>
          <button ng-click="addToFavorites()" class="btn btn-info pull-center">
              Add to Favorites
@@ -24,41 +28,43 @@
 
          <button type="submit" class="btn pull-right" ng-click="getDealersByZipcode(zip)">ZipCode</button>
          <input placeholder={{zipcode}} ng-model='zip' class="input-group pull-right">
-     </div>
+     
             <br /><br />
-
+         </div>
      <tabset justified="true">
-     	<tab heading="Price"><br>	
-     		<table class="table table-striped table-hover table-responsive table-condensed">
-     			<tbody>
-     				
-     				<tr>
-     					<td><h4>Pricing Details</h4></td>
-     					<td><h4>Price</h4></td>
-     				</tr>
-     				<tr>
-     					<td>Base MSRP:</td>
-     					<td>{{tmv.nationalBasePrice.baseMSRP}}</td>
-     				</tr>
-     				<tr>
-     					<td>Offered Price</td>
-     					<td>{{tmv.offerPrice}}</td>
-     				</tr>
-     			</tbody>
-     		</table>
-     	</tab>
-     	<tab heading="Features & Specs"><br>
-     		<table class="table table-striped table-hover table-responsive" >
-     			<tbody>
-     				<tr>
-     					<td>Car Type</td>
-                        <td>{{features.body}}</td>
-     				</tr>
-     				<tr>
-                        <td>Car Name</td>
-                        <td>{{features.name}}</td>
-                    </tr>
-                    <tr>
+         <tab heading="Price">
+             <br>
+             <table class="table table-striped table-hover table-responsive table-condensed">
+                 <tbody>
+
+                     <tr>
+                         <td><h4>Pricing Details</h4></td>
+                         <td><h4>Price</h4></td>
+                     </tr>
+                     <tr>
+                         <td>Base MSRP:</td>
+                         <td>{{tmv.nationalBasePrice.baseMSRP}}</td>
+                     </tr>
+                     <tr>
+                         <td>Offered Price</td>
+                         <td>{{tmv.offerPrice}}</td>
+                     </tr>
+                 </tbody>
+             </table>
+         </tab>
+         <tab heading="Features & Specs">
+             <br>
+             <table class="table table-striped table-hover table-responsive">
+                 <tbody>
+                     <tr>
+                         <td>Car Type</td>
+                         <td>{{features.body}}</td>
+                     </tr>
+                     <tr>
+                         <td>Car Name</td>
+                         <td>{{features.name}}</td>
+                     </tr>
+                     <tr>
                          <td>Drive Train</td>
                          <td>{{features.drivenwheels}}</td>
                      </tr>
@@ -82,30 +88,31 @@
                          <td>Transmission</td>
                          <td>{{features.transmissionnumberOfSpeeds}} Speed {{features.transmissionType}}</td>
                      </tr>
-     			</tbody>
-     		</table>
-     	</tab>
-     	<tab heading="Reviews"><br>
+                 </tbody>
+             </table>
+         </tab>
+         <tab heading="Reviews">
+             <br>
              <accordion close-others="oneAtATime">
-                
-                     <accordion-group heading="Edmund's Review" ng-click="getReviews()">
-                         <span class="reviewTitle" ng-show="!editorial">Oops!! Sorry!! Edmund hasn't posted any reviews for this model.</span>
-                         <div ng-if="editorial">
-                             <h5><b>Pros</b></h5>
-                             <p>{{editorial.pros}}</p>
-                             <h5><b>Con:</b></h5>
-                             <p>{{editorial.con}}</p>
-                             <h5><b>Edmund Says..</b></h5>
-                             <p>{{editorial.edmundSays}}</p>
-                             <h5><b>Safety</b></h5>
-                             <p>{{editorial.safety}}</p>
-                             <h5><b>PowerTrain</b></h5>
-                             <p>{{editorial.powerTrain}}</p>
-                             <h5><b>What's New</b></h5>
-                             <p>{{editorial.whatsNew}}</p>
-                         </div>
-                     </accordion-group>
-                
+
+                 <accordion-group heading="Edmund's Review" ng-click="getReviews()">
+                     <span class="reviewTitle" ng-show="!editorial">Oops!! Sorry!! Edmund hasn't posted any reviews for this model.</span>
+                     <div ng-if="editorial">
+                         <h5><b>Pros</b></h5>
+                         <p>{{editorial.pros}}</p>
+                         <h5><b>Con:</b></h5>
+                         <p>{{editorial.con}}</p>
+                         <h5><b>Edmund Says..</b></h5>
+                         <p>{{editorial.edmundSays}}</p>
+                         <h5><b>Safety</b></h5>
+                         <p>{{editorial.safety}}</p>
+                         <h5><b>PowerTrain</b></h5>
+                         <p>{{editorial.powerTrain}}</p>
+                         <h5><b>What's New</b></h5>
+                         <p>{{editorial.whatsNew}}</p>
+                     </div>
+                 </accordion-group>
+
                  <accordion-group heading="Customer Review" ng-click="getConsumerReviews()">
                      <span class="reviewTitle" ng-show="consumerReviews.length == 0">Be the first one to review this product.</span>
                      <button class="btn btn-primary" ng-click="addReview()">Add Review</button><br><br>
@@ -163,10 +170,11 @@
 
                  </accordion-group>
              </accordion>
-     	</tab>
-     	<tab heading="Dealers"><br><br>
-     		<span class="Dealers" ng-show="dealers.length == 0">You don't have any dealers near this area.Search for a different location.</span>
-            <div ng-show="details">
+         </tab>
+         <tab heading="Dealers">
+             <br><br>
+             <span class="Dealers" ng-show="dealers.length == 0">You don't have any dealers near this area.Search for a different location.</span>
+             <div ng-show="details">
 
                  <div class="row">
                      <div class="col-sm-4">
@@ -188,24 +196,25 @@
                      </div>
                  </div>
              </div>
-        	<table class="table table-striped table-hover table-responsive">
-        		<tbody>
-        			<tr ng-repeat="dealer in dealers">
+             <table class="table table-striped table-hover table-responsive">
+                 <tbody>
+                     <tr ng-repeat="dealer in dealers">
                          <td>{{dealer.name}}</td>
                          <td>
                              <button ng-click="getDetails(dealer)" class="btn btn-primary pull-right" value="View Details">
-                                
-                                View Details
+
+                                 View Details
                              </button>
-                         	 <br><br>
-                             <button ng-click="addToCheckList(dealer)" class="btn btn-info pull-right" value="Add to CheckList">Add to checklist
-                                 
+                             <br><br>
+                             <button ng-click="addToCheckList(dealer)" class="btn btn-info pull-right" value="Add to CheckList">
+                                 Add to checklist
+
                              </button>
                          </td>
                      </tr>
-        		</tbody>
-        	</table>
-     	</tab>
+                 </tbody>
+             </table>
+         </tab>
      </tabset>
      <br><br>
      </div>

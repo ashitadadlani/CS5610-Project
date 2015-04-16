@@ -47,25 +47,26 @@
 
                         <li class="dropdown dd-content-wrap">
                             <a href="#/" data-toggle="dropdown">Search by Makes<span class="caret"></span></a>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu" id="make">
 
-                                <li class="dropdown-submenu" ng-repeat="make in makes">
+                                <li class="dropdown-submenu" ng-repeat="make in makes" id="makedropdown">
                                     <a class="dropdown-toggle" data-toggle="dropdown" role="button" ng-click="fetchModels(make)">{{make.name}}</a>
 
                                 </li>
                             </ul>
                         </li>
-
-                        <li class="dropdown" ng-show="models">
-                            <a href="#/" data-toggle="dropdown">Models<span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li class="dropdown-submenu" ng-repeat="model in models">
-                                    <a tabindex="-1" class="dropdown-toggle" data-toggle="dropdown" role="button" ng-click="fetchYears(model, selectedMake)">{{model.name}}</a>
+                        
+                        <li class="dropdown" ng-show="models"  id="model">
+                            <a role="button" id="model" data-toggle="dropdown">Models<span class="caret"></span></a>
+                            <ul class="dropdown-menu" id="make" >
+                                <li class="dropdown-submenu" ng-repeat="model in models" id="makedropdown">
+                                    <a tabindex="-1" class="dropdown-toggle" id="model" role="button" ng-click="fetchYears(model, selectedMake)">{{model.name}}</a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="dropdown" ng-show="years">
-                            <a  data-toggle="dropdown">Year<span class="caret"></span></a>
+
+                        <li class="dropdown" ng-show="years" id="year">
+                            <a id="year" role="button" data-toggle="dropdown">Year<span class="caret"></span></a>
                             <ul class="dropdown-menu">
                                 <li class="dropdown-submenu" ng-repeat="year in years">
                                     <a href="#/make/{{selectedMake.name}}/model/{{selectedModel.name}}/year/{{year.year}}" tabindex="-1" class="dropdown-toggle" role="button" data-toggle="dropdown">{{year.year}}</a>
