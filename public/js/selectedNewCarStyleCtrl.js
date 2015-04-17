@@ -2,8 +2,80 @@
     
 }, "json");
 
+app.factory("CarDetailService", function ($http) {
 
-app.controller("selectedNewCarStyleCtrl", function ($scope, $http, $rootScope, $location, $routeParams) {
+    var fetchEdmundReviewsFromAPI = function (make, model, year, callback) {
+        $http.get("https://api.edmunds.com/v1/content/editorreviews?make=" + make + "&model=" + model + "&year=" + year + "&fmt=json&api_key=chfytaj2vn952t8hy2y6qtb5")
+        .success(callback);    
+    };
+
+    var fetchImagesFromAPI = function(styleid, callback){
+        $http.get("http://api.edmunds.com/v1/api/vehiclephoto/service/findphotosbystyleid?styleId=" + styleid + "&fmt=json&api_key=chfytaj2vn952t8hy2y6qtb5")
+        .success(callback);
+    };
+
+    var fetchFeaturesFromAPI = function(styleid, callback){
+        $http.get('https://api.edmunds.com/api/vehicle/v2/styles/' + styleid + '?fmt=json&api_key=chfytaj2vn952t8hy2y6qtb5&view=full')
+        .success(callback);
+    };
+
+    var fetchCustomerReviewsFromAPI = function (styleid, callback) {
+        $http.get("https://api.edmunds.com/api/vehiclereviews/v2/styles/" + styleid + "?&fmt=json&api_key=chfytaj2vn952t8hy2y6qtb5")
+        .success(callback);
+    };
+
+    var fetchDealers = function (make, zipcode, callback) {
+        $http.get("http://api.edmunds.com/api/dealer/v2/dealers/?zipcode=" + zipcode + "&radius=100&make=" + make + "&state=new&pageNum=1&pageSize=10&sortby=distance%3AASC&view=basic&api_key=chfytaj2vn952t8hy2y6qtb5")
+        .success(callback);
+    };
+
+    var fetchPrice = function(styleid, zipcode, callaback){
+        $http.get("https://api.edmunds.com/v1/api/tmv/tmvservice/calculatenewtmv?styleid=" + styleid + "&zip=" + zipcode + "&fmt=json&api_key=chfytaj2vn952t8hy2y6qtb5")
+        .success(callaback);
+    };
+
+    var fetchEdmundReviewsFromLocal = function(styleid, callback){
+        $http.get("/car/edmund/reviews/" + styleid)
+        .success(callback);
+    };
+
+    var fetchImagesFromLocal = function(styleid, callback){
+        $http.get("/car/images/" + styleid)
+        .success(callback);
+    };
+
+    var fetchFeaturesFromLocal = function(styleid, callback){
+        $http.get("/car/features/" + styleid)
+        .success(callback);
+    };
+
+    var fetchCustomerReviewsFromLocal = function(styleid, callback){
+        $http.get("/car/customer/review/" + styleid)
+        .success(callback);
+    };
+
+    var updateCustomerReview = function(styleid, newReview, callback){
+        $http.post("/car/customer/review/" + styleid, newReview)
+        .success(callback);
+    }
+
+    return {
+        fetchEdmundReviewsFromAPI: fetchEdmundReviewsFromAPI,
+        fetchImagesFromAPI: fetchImagesFromAPI,
+        fetchFeaturesFromAPI: fetchFeaturesFromAPI,
+        fetchCustomerReviewsFromAPI: fetchCustomerReviewsFromAPI,
+        fetchDealers: fetchDealers,
+        fetchPrice: fetchPrice,
+        fetchEdmundReviewsFromLocal: fetchEdmundReviewsFromLocal,
+        fetchImagesFromLocal: fetchImagesFromLocal,
+        fetchFeaturesFromLocal: fetchFeaturesFromLocal,
+        fetchCustomerReviewsFromLocal: fetchCustomerReviewsFromLocal,
+        updateCustomerReview: updateCustomerReview
+    }
+
+})
+
+app.controller("selectedNewCarStyleCtrl", function (CarDetailService, $scope, $http, $rootScope, $location, $routeParams) {
     
     $scope.make = $routeParams.make;
     $scope.model = $routeParams.model;
@@ -21,14 +93,12 @@ app.controller("selectedNewCarStyleCtrl", function ($scope, $http, $rootScope, $
     }
 
     //get edmund reviews
-    $http.get("/car/edmund/reviews/" + $scope.styleid)
-    .success(function (response){
+    CarDetailService.fetchEdmundReviewsFromLocal($scope.styleid, function (response){
     	if(response){
     		$scope.editorial = response;
     	}
     	else{
-    		$http.get("https://api.edmunds.com/v1/content/editorreviews?make=" + $scope.make + "&model=" + $scope.model + "&year=" + $scope.year + "&fmt=json&api_key=chfytaj2vn952t8hy2y6qtb5")
-    		.success(function (response) {
+    		CarDetailService.fetchEdmundReviewsFromAPI($scope.make, $scope.model, $scope.year, function (response) {
     			console.log(response);
     			$http.post("/car/edmund/reviews/" + $scope.styleid, {
     					styleid: $scope.styleid,
@@ -49,8 +119,7 @@ app.controller("selectedNewCarStyleCtrl", function ($scope, $http, $rootScope, $
 
     //get images
     $scope.media = [];
-    $http.get("/car/images/" + $scope.styleid)
-    .success(function (response){
+    CarDetailService.fetchImagesFromLocal($scope.styleid, function (response){
     	if(response){
     		 
     		for (var i in response.img){
@@ -60,8 +129,7 @@ app.controller("selectedNewCarStyleCtrl", function ($scope, $http, $rootScope, $
     		console.log($scope.media);
     	}
     	else{
-    		$http.get("http://api.edmunds.com/v1/api/vehiclephoto/service/findphotosbystyleid?styleId=" + $scope.styleid + "&fmt=json&api_key=chfytaj2vn952t8hy2y6qtb5")
-    		.success(function (response) {
+    		CarDetailService.fetchImagesFromAPI($scope.styleid, function (response) {
     			var img = [];
     			
     				for(var i in response)
@@ -87,24 +155,20 @@ app.controller("selectedNewCarStyleCtrl", function ($scope, $http, $rootScope, $
     });
 
    //get price values
-    
-    $http.get("https://api.edmunds.com/v1/api/tmv/tmvservice/calculatenewtmv?styleid=" + $scope.styleid + "&zip=" + $scope.zipcode + "&fmt=json&api_key=chfytaj2vn952t8hy2y6qtb5")
-        .success(function (response) {
+        CarDetailService.fetchPrice($scope.styleid, $scope.zipcode, function (response) {
             console.log(response.tmv);
             $scope.tmv = response.tmv;
 
         });
     
-    $http.get("/car/features/" + $scope.styleid)
-    .success(function (response){
+    CarDetailService.fetchFeaturesFromLocal($scope.styleid, function (response){
     	if(response){
     		$scope.features = response;
     		console.log("From local database");
     		
     	}
     	else{
-    		$http.get('https://api.edmunds.com/api/vehicle/v2/styles/' + $scope.styleid + '?fmt=json&api_key=chfytaj2vn952t8hy2y6qtb5&view=full')
-    		.success(function (response) {
+    		CarDetailService.fetchFeaturesFromAPI($scope.styleid, function (response) {
     			$scope.style = response;
     			$http.post("/car/features/" + $scope.styleid, {
     				styleid: $scope.styleid,
@@ -131,8 +195,7 @@ app.controller("selectedNewCarStyleCtrl", function ($scope, $http, $rootScope, $
     //get consumer reviews
     $scope.consumerReviews=[];
     $rootScope.details = null;
-    $http.get("/car/customer/review/" + $scope.styleid)
-    .success(function (response){
+    CarDetailService.fetchCustomerReviewsFromLocal($scope.styleid, function (response){
     	if(response){
     		console.log("Customer reviews from local");
     		
@@ -140,8 +203,7 @@ app.controller("selectedNewCarStyleCtrl", function ($scope, $http, $rootScope, $
     		
     	}
     	else{
-    		$http.get("https://api.edmunds.com/api/vehiclereviews/v2/styles/" + $scope.styleid + "?&fmt=json&api_key=chfytaj2vn952t8hy2y6qtb5")
-    		.success(function (response) {
+    		CarDetailService.fetchCustomerReviewsFromAPI($scope.styleid, function (response) {
     			var review = [];
     			for(var i in response.reviews){
     			 review[i] = {
@@ -158,22 +220,17 @@ app.controller("selectedNewCarStyleCtrl", function ($scope, $http, $rootScope, $
     					styleid: $scope.styleid,
     					reviews: review
     			};
-    			
-    			
-    			$http.post("/car/customer/review/" + $scope.styleid, newReview)
-    			.success(function(response){
+
+    		    CarDetailService.updateCustomerReview($scope.styleid, newReview, function(response){
     				$scope.consumerReviews = response.reviews;
     				
     			})
-    			
-    		
     		});
     	}
     })
 
     //get dealers
-    $http.get("http://api.edmunds.com/api/dealer/v2/dealers/?zipcode=" + $scope.zipcode + "&radius=100&make=" + $scope.make + "&state=new&pageNum=1&pageSize=10&sortby=distance%3AASC&view=basic&api_key=chfytaj2vn952t8hy2y6qtb5")
-        .success(function (response) {
+        CarDetailService.fetchDealers($scope.make, $scope.zipcode, function (response) {
             console.log(response);
             $scope.dealers = response.dealers;
           
