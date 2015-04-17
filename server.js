@@ -321,7 +321,7 @@ app.put("/car/user/addDealer/:uid/favorite/:fid", function (req, res) {
     });
 });
 
-app.put("/profile/:uid/myFavorites/:styleid/dealer/", function (req, res) {
+app.put("/profile/:uid/myFavorites/:styleid/dealer", function (req, res) {
     UserModel.update({ _id: req.params.uid }, { $set: { favorites: req.body } }, function (err, data) {
         UserModel.findById(req.params.uid, function (err, data) {
             res.json(data);

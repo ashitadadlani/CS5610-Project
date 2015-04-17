@@ -97,7 +97,32 @@ var checkLoggedin = function ($q, $timeout, $http, $location, $rootScope) {
     return deferred.promise;
 };
 
-app.controller('MainCtrl', function ($scope, $http, $rootScope, $location) {
+app.factory("CarService", function ($http) {
+
+    var fetchMakes = function (callback) {
+        $http.get("http://api.edmunds.com/api/vehicle/v2/makes?fmt=json&api_key=chfytaj2vn952t8hy2y6qtb5")
+        .success(callback);
+    };
+
+    var fetchModels = function (make, callback) {
+        $http.get("http://api.edmunds.com/api/vehicle/v2/" + make + "/models?fmt=json&api_key=chfytaj2vn952t8hy2y6qtb5")
+        .success(callback);
+    };
+
+    var fetchYears = function(model, make, callback){
+        $http.get("http://api.edmunds.com/api/vehicle/v2/" + make + "/" + model + "/years?fmt=json&state=new&api_key=chfytaj2vn952t8hy2y6qtb5")
+        .success(callback);
+    }
+
+    return {
+        fetchMakes: fetchMakes,
+        fetchModels: fetchModels,
+        fetchYears: fetchYears
+    }
+
+});
+
+app.controller('MainCtrl', function (CarService, $scope, $http, $rootScope, $location) {
 	
 	$scope.tabs = [
 	               { title:'Dynamic Title 1', content:'Dynamic content 1' },
@@ -118,22 +143,20 @@ app.controller('MainCtrl', function ($scope, $http, $rootScope, $location) {
 
     };
 
-    $http.get("http://api.edmunds.com/api/vehicle/v2/makes?fmt=json&api_key=chfytaj2vn952t8hy2y6qtb5")
-   .success(function (response) {
-       $rootScope.makes = response.makes;
-       
-       $rootScope.models = null;
-       $rootScope.years = null;;
-       $rootScope.styles = null;
+    CarService.fetchMakes(function (response) {
+        $rootScope.makes = response.makes;
+        $rootScope.models = null;
+        $rootScope.years = null;;
+        $rootScope.styles = null;
     });
+
 
     $scope.fetchModels = function (make) {
        
         $scope.selectedMake = make;
         $rootScope.years = null;;
         $rootScope.styles = null;
-        $http.get("http://api.edmunds.com/api/vehicle/v2/" + make.name + "/models?fmt=json&api_key=chfytaj2vn952t8hy2y6qtb5")
-        .success(function (response) {
+        CarService.fetchModels(make.name, function (response) {
             console.log(response.models);
             $rootScope.models = response.models;
             $('#model').addClass('open');
@@ -143,8 +166,7 @@ app.controller('MainCtrl', function ($scope, $http, $rootScope, $location) {
 
     $scope.fetchYears = function (model, make) {
         $scope.selectedModel = model;
-        $http.get("http://api.edmunds.com/api/vehicle/v2/" + make.name + "/" + model.name + "/years?fmt=json&state=new&api_key=chfytaj2vn952t8hy2y6qtb5")
-        .success(function (response) {
+        CarService.fetchYears(model.name, make.name, function (response) {
             console.log(response.years);
             $rootScope.years = response.years;
             $('#model').removeClass('open');
