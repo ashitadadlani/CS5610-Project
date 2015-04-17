@@ -20,6 +20,6 @@ app.controller("LoginCtrl", function ($scope, $http, LoginService, $location, $r
             $rootScope.loginFailureMessage = "";
         })
         if($rootScope.currentUser == null)
-        	$rootScope.loginFailureMessage = "Invalid email or password!!";
+        	$scope.loginFailureMessage = "Invalid email or password!!";
     }
 });

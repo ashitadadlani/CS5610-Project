@@ -7,6 +7,8 @@
     text-align: center;
     
 }
+
+
 #make{
     width: 340px; 
 }
@@ -27,7 +29,13 @@
 
 #selectedmodel{
     background-color:white;
+    
    
+}
+
+#selectedmodeldiv{
+    padding-left: 15%;
+    padding-right: 15%;
 }
 
 #viewsections{

@@ -15,8 +15,8 @@ app.factory("UserService", function ($http) {
         .success(callback);
     };
 
-    var removeDealer = function(uid, styleid, car, callback){
-    	$http.put("/profile/" + uid + "/myFavorites/" + styleid + "/dealer", car)
+    var removeDealer = function(uid, styleid, fav, callback){
+    	$http.put("/profile/" + uid + "/myFavorites/" + styleid + "/dealer", fav)
     	.success(callback);
     }
 
@@ -95,22 +95,28 @@ function ($scope, $http, UserService, $rootScope) {
     };
     
     $scope.removeDealer = function (car, dealer) {
-        for (var i in $scope.dealers) {
-            if ($scope.dealers[i]._id == dealer._id) {
+        console.log($scope.favdealers);
+        for (var i in $scope.favdealers) {
+            if ($scope.favdealers[i].id == dealer.id) {
                 $scope.index = i;
+                
                 break;
             }
         }
-
+        console.log("break");
+        console.log(i);
+        console.log(dealer.id);
+        console.log($scope.favdealers[i].id);
+        
         for (var i in $scope.favorites) {
             if ($scope.favorites[i].styleid == car.styleid) {
-                $scope.car = $scope.favorites[i];
+                $scope.rcar = $scope.favorites[i];
                 break;
             }
         }
 
         $scope.user = $rootScope.currentUser;
-        $scope.car.dealers.splice($scope.index, 1);
+        $scope.rcar.dealers.splice($scope.index, 1);
         UserService.removeDealer($rootScope.currentUser._id, car.styleid, $scope.favorites, function (response) {
             $rootScope.currentUser = response;
             console.log(response);

@@ -156,7 +156,6 @@ passport.deserializeUser(function (user, done) {
 app.post("/login", passport.authenticate('local'),
 function (req, res) {
     var user = req.user;
-    console.log(user);
     res.json(user);
 
 });
@@ -183,14 +182,14 @@ app.get("/home", function (req, res) {
 
 app.get('/user/login', function (req, res) {
     UserModel.find(function (err, users) {
-        console.log(users);
+        
         res.json(users);
     })
 });
 
 app.get('/user/login/:email', function (req, res) {
     UserModel.findOne({ email: req.params.email }, function (err, user) {
-        console.log(user)
+        
         res.json(user);
     })
 })
