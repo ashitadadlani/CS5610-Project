@@ -11,12 +11,6 @@ app.controller("selectedNewCarStyleCtrl", function ($scope, $http, $rootScope, $
     $scope.styleid = $routeParams.sid;
     $scope.zipcode = $routeParams.zip;
     
-    $rootScope.priceClicked = true;
-    $rootScope.details = null;
-    $rootScope.clickedFeatures = false;
-    $rootScope.clickedDealers = false;
-    $rootScope.reviewClicked = false;
-    $rootScope.consumerReviewClicked = false;    
     
     if($routeParams.email){
     	$http.get("/user/login/" + $routeParams.email).success(function (response) {
@@ -326,51 +320,6 @@ app.controller("selectedNewCarStyleCtrl", function ($scope, $http, $rootScope, $
             }
         });
     }
-
-    $scope.trueMarketValue = function () {
-        $rootScope.priceClicked = true;
-        $rootScope.reviewClicked = false;
-        $rootScope.consumerReviewClicked = false;
-        $rootScope.clickedFeatures = false;
-        $rootScope.clickedDealers = false;
-    };
-
-    $rootScope.getReviews = function () {
-        $rootScope.priceClicked = false;
-        $rootScope.reviewClicked = true;
-        $rootScope.consumerReviewClicked = false;
-        $rootScope.clickedDealers = false;
-        $rootScope.clickedFeatures = false;
-        
-            };
-
-    $scope.getConsumerReviews = function () {
-        $rootScope.consumerReviewClicked = true;
-        $rootScope.reviewClicked = false;
-        $rootScope.clickedDealers = false;
-        $rootScope.priceClicked = false;
-        $rootScope.clickedFeatures = false;
-    };
-
-    $scope.getFeatures = function () {
-        $rootScope.consumerReviewClicked = false;
-        $rootScope.clickedDealers = false;
-        $rootScope.priceClicked = false;
-        $rootScope.clickedFeatures = true;
-        $rootScope.reviewClicked = false;
-        
-    };
-   
-    $scope.getDealers = function () {
-
-        $rootScope.priceClicked = false;
-        $rootScope.clickedDealers = true;
-        
-        $rootScope.clickedFeatures = false;
-        $rootScope.reviewClicked = false;
-        $rootScope.consumerReviewClicked = false;
-        
-    };
 
     $scope.getDealersByZipcode = function (zip) {
     	

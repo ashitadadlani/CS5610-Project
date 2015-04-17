@@ -95,7 +95,7 @@
              <br>
              <accordion close-others="oneAtATime">
 
-                 <accordion-group heading="Edmund's Review" ng-click="getReviews()">
+                 <accordion-group heading="Edmund's Review">
                      <span class="reviewTitle" ng-show="!editorial">Oops!! Sorry!! Edmund hasn't posted any reviews for this model.</span>
                      <div ng-if="editorial">
                          <h5><b>Pros</b></h5>
@@ -113,7 +113,7 @@
                      </div>
                  </accordion-group>
 
-                 <accordion-group heading="Customer Review" ng-click="getConsumerReviews()">
+                 <accordion-group heading="Customer Review">
                      <span class="reviewTitle" ng-show="consumerReviews.length == 0">Be the first one to review this product.</span>
                      <button class="btn btn-primary" ng-click="addReview()">Add Review</button><br><br>
                      <div ng-show="newReviewToAdd">
