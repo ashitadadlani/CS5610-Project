@@ -60,7 +60,8 @@
                         <li class="dropdown" ng-show="models" id="model">
                             <a role="button" id="model" data-toggle="dropdown">Models<span class="caret"></span></a>
                             <ul class="dropdown-menu" id="make">
-                                <li class="dropdown-submenu" ng-repeat="model in models" id="makedropdown">
+                                <li ng-show="models.length==0">Please select a car make firs!!.</li>
+                                <li ng-if="models.length!=0" class="dropdown-submenu" ng-repeat="model in models" id="makedropdown">
                                     <a tabindex="-1" class="dropdown-toggle" id="model" role="button" ng-click="fetchYears(model, selectedMake)">{{model.name}}</a>
                                 </li>
                             </ul>
@@ -68,11 +69,16 @@
 
                         <li class="dropdown" ng-show="years" id="year">
                             <a id="year" role="button" data-toggle="dropdown">Year<span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li class="dropdown-submenu" ng-repeat="year in years">
-                                    <a href="#/make/{{selectedMake.name}}/model/{{selectedModel.name}}/year/{{year.year}}" tabindex="-1" class="dropdown-toggle" role="button" data-toggle="dropdown">{{year.year}}</a>
-                                </li>
-                            </ul>
+                          
+                                <ul class="dropdown-menu">
+                                    <li ng-show="years.length==0">This model doesn't have any car available. Please choose a different model!!</li>
+                                    <li ng-if="years.length!=0" class="dropdown-submenu" ng-repeat="year in years">
+
+                                        <a href="#/make/{{selectedMake.name}}/model/{{selectedModel.name}}/year/{{year.year}}" tabindex="-1" class="dropdown-toggle" role="button" data-toggle="dropdown">{{year.year}}</a>
+
+                                    </li>
+                                </ul>
+                           
                         </li>
 
                         <li><a href="#profile">Profile</a></li>
